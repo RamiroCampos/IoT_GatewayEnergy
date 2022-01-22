@@ -1,46 +1,36 @@
+import paho.mqtt.client as mqtt
 import urllib3
 import serial
-from time import sleep
 
 
-API_KEY = "https://api.thingspeak.com/update?api_key=RS75WRZPOF5JG0XB&"
+# MQTT Infos
+channel_id = 1610857
+topic = "channels/1610857/publish/RS75WRZPOF5JG0XB"
+server = "mqtt.thingspeak.com" 
+clientName = "ESP-ThingSpeak"
 
-http = urllib3.PoolManager()
-ser = serial.Serial('COM5',9600)
+def on_connect(client, userdata, flags, rc):
+    print("Connection returned result: " + str(rc))
 
-
-print("Enviando dados...")
-
-potencia_values = []
-
-while True:
-    '''
-    c = 60; 
-    while c > 1:
-        corrente = float(ser.readline().decode('utf-8'))
-        potencia = round(float(corrente) * 220, 2)
-        potencia_values.append(potencia)
-
-        c -= 1
-        sleep(1)
-    '''
-
-    potencia_media = float(ser.readline().decode('utf-8'))
-
-    #media_potencia = sum(potencia_values) / len(potencia_values) 
-
-    #print("corrente: {}".format(corrente))
-    print("potência média: {}".format(potencia_media))
-
-#    if(potencia < corrente):
-#        corrente, potencia  = potencia, corrente
-     
-    #url = API_KEY + "field1=" + str(corrente) + "&" + "field2=" + str(potencia)
-    url = API_KEY + "field2=" + str(potencia_media)
-
-    http.request('GET',url)
+def main():
+    # Conectando como broker
+    client = mqtt.Client(clientName)
+    client.on_connect = on_connect
+    client.connect(server)
+    client.loop_start()
     
+    # Porta Serial
+    ser = serial.Serial('COM5',9600)
+
+    print("Conectado ao broker...")
+    while True:
+        potencia_media = float(ser.readline().decode('utf-8'))
+        print("potência média: {}".format(potencia_media))
+
+        fields = "field1=" + str(potencia_media) + '&status=MQTTPUBLISH'
+
+        client.publish(topic, payload=fields)
 
 
-
-
+if __name__ == "__main__":
+    main()
