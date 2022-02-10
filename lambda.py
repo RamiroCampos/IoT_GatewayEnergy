@@ -8,8 +8,7 @@ TUSD = 0.46955
 TE = 0.36433
 days = 7
 def calcCustoObj(_objPot, _hours, _days = days):
-    preco = ((_objPot*_hours*_days)/1000)*soma_tarifas()
-
+    preco = ((_objPot*_hours*_days)/1000) * soma_tarifas()
     return round(preco,2)
     
 def pot_med(event):
@@ -27,13 +26,11 @@ def pot_med(event):
       return -1
       
 class Object:
-   
     # init method or constructor 
     def __init__(self, name, pot, hours):
         self.name = name
         self.pot = pot
         self.hours = hours
-
 
     # Sample Method 
     def report(self):
@@ -46,11 +43,7 @@ def get_tarifas():
 
 def soma_tarifas():
     return Bandeira + TUSD +  TE 
-  
-# def get_list_object(oaid = ""):
-#     # faz uma ação para pegar os objetos no canal do ThingSpeak
-#     return # lista de objetos
-
+ 
 def get_text(event):
     values = []
     tarifas = get_tarifas()
@@ -107,17 +100,10 @@ def lambda_handler(event, context):
   print("event tem as seguintes chaves: ", event.keys()) 
   print(event['body'])
   if('body' in event.keys()):
-    evento = event['body']
-      
-  send_email(event['body'])
-  
+    send_email(event['body'])
+
   return {
     "statusCode": 200,
-    "headers":{
-      "Access-Control-Allow-Headers" : "Content-Type",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "*"
-    },
     "body": "Email Enviado!"
   }
   
